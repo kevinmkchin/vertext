@@ -1,2 +1,2 @@
 # TrueTypeAssembler
-Single header libraries by Kevin Chin for C/C++
+Single header C/C++ library for truetype text textured quad vertices assembly.

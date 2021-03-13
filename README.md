@@ -1,7 +1,12 @@
 # TrueTypeAssembler
-Single header C library for truetype text textured quad vertices assembly. It generates a vertices and texture coordinates array for creating vertex buffers to render text onto the screen. Works seamlessly with both OpenGL and DirectX.
+Single header C library for truetype text textured quad vertices assembly. It generates a vertices and texture coordinates array for creating vertex buffers to render text onto the screen. Works seamlessly with both OpenGL and DirectX. Very lightweight: ~450 LOC.
 
 ![](https://github.com/kevinmkchin/TrueTypeAssembler/blob/main/misc/text-buffer-assembly.gif?raw=true)
+
+This library REQUIRES [Sean Barrett's stb_truetype.h](https://github.com/nothings/stb/blob/master/stb_truetype.h) library (which is also a single header). Include like so:
+
+![](https://github.com/kevinmkchin/TrueTypeAssembler/blob/main/misc/includes.png?raw=true)
+
 ```
 kc_truetypeassembler.h 
 

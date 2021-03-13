@@ -9,6 +9,8 @@ This library REQUIRES [Sean Barrett's stb_truetype.h](https://github.com/nothing
 
 ![](https://github.com/kevinmkchin/TrueTypeAssembler/blob/main/misc/includes.png?raw=true)
 
+Public domain. Do whatever you want with it.
+
 ```
 kc_truetypeassembler.h 
 

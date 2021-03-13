@@ -1,5 +1,5 @@
 # TrueTypeAssembler
-Single header C/C++ library for truetype text textured quad vertices assembly.
+Single header C library for truetype text textured quad vertices assembly.
 
 ```
 kc_truetypeassembler.h 

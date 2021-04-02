@@ -1,5 +1,5 @@
 # kc_truetypeassembler.h
-Single header C library for assembling textured quads for text rendering. The library does not perform rendering directly and instead provides a vertex buffer of vertices and texture coordinates. This allows the library to work seamlessly with both OpenGL and DirectX. Very lightweight: ~450 LOC. See https://github.com/kevinmkchin/opengl-3d-renderer for use examples.
+Single header C library for assembling textured quads for text rendering. The library does not perform rendering directly and instead provides a vertex buffer of screen-space vertices and texture coordinates. This allows the library to work seamlessly with both OpenGL and DirectX. Very lightweight: ~450 LOC. See https://github.com/kevinmkchin/opengl-3d-renderer for use examples.
 
 ![](https://github.com/kevinmkchin/TrueTypeAssembler/blob/main/misc/console.gif?raw=true)
 

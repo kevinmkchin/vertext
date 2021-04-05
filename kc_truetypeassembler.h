@@ -2,6 +2,16 @@
 
  - kevinmkchin's TrueType Assembler -
 
+    Do this:
+        #define KC_TRUETYPEASSEMBLER_IMPLEMENTATION
+    before you include this file in *one* C or C++ file to create the implementation.
+    // i.e. it should look like this:
+    #include ...
+    #include ...
+    #include ...
+    #define KC_TRUETYPEASSEMBLER_IMPLEMENTATION
+    #include "kc_truetypeassembler.h"
+
 PURPOSE:
     Single-header library to generate vertices and texture coordinates array for
     creating Vertex Buffers to render text onto the screen. Works seamlessly with 
@@ -142,23 +152,20 @@ USAGE EXAMPLE (C code using OpenGL):
     glUseProgram(0);
 
 TODO:
+    - Option for getting vertices clip-space coordinates instead of screen-space
     - Kerning
     - Top-to-bottom text (vertical text)
 Maybe:
     - Support creating font atlas for a select few characters (e.g. only the characters in 'D''O''O''M')
         this will allow larger font sizes for the few select characters and also smaller font texture atlas sizes.
 */
+#ifndef _INCLUDE_KC_TRUETYPEASSEMBLER_H_
+#define _INCLUDE_KC_TRUETYPEASSEMBLER_H_
 
-#define kctta_internal static           // kctta internal function
-#define kctta_local_persist static      // kctta local static variable
-#define KCTTA_ASCII_FROM ' '            // starting ASCII codepoint to collect font data for
-#define KCTTA_ASCII_TO '~'              // ending ASCII codepoint to collect font data for
-#define KCTTA_MAX_CHAR_IN_BUFFER 800    // maximum characters allowed in vertex buffer ("canvas")
+#define kctta_internal static   // kctta internal function
+#define KCTTA_ASCII_FROM ' '    // starting ASCII codepoint to collect font data for
+#define KCTTA_ASCII_TO '~'      // ending ASCII codepoint to collect font data for
 #define KCTTA_GLYPH_COUNT KCTTA_ASCII_TO - KCTTA_ASCII_FROM + 1
-#define KCTTA_MAX_FONT_RESOLUTION 100   // maximum font resolution when initializing font
-#define KCTTA_DESIRED_ATLAS_WIDTH 400   // width of the font atlas
-#define KCTTA_AT_PAD_X 1                // x padding between the glyph textures on the texture atlas
-#define KCTTA_AT_PAD_Y 1                // y padding between the glyph textures on the texture atlas
 
 /** Stores a pointer to the vertex buffer assembly array and the count of vertices in the 
     array (total length of array would be count of vertices * 4).
@@ -265,8 +272,25 @@ kctta_internal void kctta_clear_buffer();
 */
 kctta_internal void kctta_use_index_buffer(unsigned int b_use);
 
+#undef kctta_internal
+#undef KCTTA_ASCII_FROM
+#undef KCTTA_ASCII_TO
+#undef KCTTA_GLYPH_COUNT
 
+#endif // _INCLUDE_KC_TRUETYPEASSEMBLER_H_
+
+#ifdef KC_TRUETYPEASSEMBLER_IMPLEMENTATION
 ///////////////////// IMPLEMENTATION //////////////////////////
+#define kctta_internal static           // kctta internal function
+#define kctta_local_persist static      // kctta local static variable
+#define KCTTA_ASCII_FROM ' '            // starting ASCII codepoint to collect font data for
+#define KCTTA_ASCII_TO '~'              // ending ASCII codepoint to collect font data for
+#define KCTTA_GLYPH_COUNT KCTTA_ASCII_TO - KCTTA_ASCII_FROM + 1
+#define KCTTA_MAX_CHAR_IN_BUFFER 800    // maximum characters allowed in vertex buffer ("canvas")
+#define KCTTA_MAX_FONT_RESOLUTION 100   // maximum font resolution when initializing font
+#define KCTTA_DESIRED_ATLAS_WIDTH 400   // width of the font atlas
+#define KCTTA_AT_PAD_X 1                // x padding between the glyph textures on the texture atlas
+#define KCTTA_AT_PAD_Y 1                // y padding between the glyph textures on the texture atlas
 
 kctta_internal int
 kctta_ceil(float num) 
@@ -602,3 +626,18 @@ kctta_use_index_buffer(unsigned int b_use)
     }
     kctta_b_use_indexed_draw_flag = b_use;
 }
+
+// clean up
+#undef kctta_internal
+#undef kctta_local_persist
+#undef KCTTA_ASCII_FROM
+#undef KCTTA_ASCII_TO
+#undef KCTTA_MAX_CHAR_IN_BUFFER
+#undef KCTTA_GLYPH_COUNT
+#undef KCTTA_MAX_FONT_RESOLUTION
+#undef KCTTA_DESIRED_ATLAS_WIDTH
+#undef KCTTA_AT_PAD_X
+#undef KCTTA_AT_PAD_Y
+
+#undef KC_TRUETYPEASSEMBLER_IMPLEMENTATION
+#endif // KC_TRUETYPEASSEMBLER_IMPLEMENTATION

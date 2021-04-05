@@ -44,6 +44,7 @@ PURPOSE:
             required by the text you want to draw
         3.  handling the assembly of the quad vertices for the single vertex buffer by
             using the character/glyph metrics (size, offsets, etc.)
+            
 CONCEPT:
     This library serves as a text drawing "canvas". 
     You can "append" lines of text or characters to the "canvas". You can control where
@@ -53,6 +54,7 @@ CONCEPT:
     Then, it is up to you and your graphics API to create the VAO and VBO on the graphics card
     using the vertex buffer you "grabbed" from this library.
     Check the USAGE EXAMPLEs below to see how this would translate to code.
+    
 USAGE:
     This library REQUIRES Sean Barrett's stb_truetype.h to be included beforehand:
     https://raw.githubusercontent.com/nothings/stb/master/stb_truetype.h
@@ -65,6 +67,7 @@ USAGE:
     This library is not responsible for rendering text. You can do that on your own in your
     preferred graphics API, a quad/ui rendering shader, and an orthogonal projection matrix.
     (https://www.learnopengles.com/tag/index-buffer-object/)
+    
 USAGE EXAMPLE (Pseudocode):
 Do only once:
     Optional:   kctta_use_index_buffer(b_use = 1);                        <-- Set this to true if you are using indexed draws
@@ -96,6 +99,7 @@ Loop:
     Optional:   kctta_clear_buffer();           <-- REQUIRED IF you want to clear the appended text to append NEW text
                                                     Only clear AFTER you bind the vertex and index buffers of %grabbedbuffer%
                                                     to the VAO and VBO on the GPU.
+                                                    
 USAGE EXAMPLE (C code using OpenGL):
     #define TEXT_SIZE 30
     unsigned char* font_file;

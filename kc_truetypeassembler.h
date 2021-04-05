@@ -8,7 +8,8 @@
     // i.e. it should look like this:
     #include ...
     #include ...
-    #include ...
+    #define STB_TRUETYPE_IMPLEMENTATION
+    #include "stb_truetype.h"
     #define KC_TRUETYPEASSEMBLER_IMPLEMENTATION
     #include "kc_truetypeassembler.h"
 

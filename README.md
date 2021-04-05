@@ -24,6 +24,7 @@ kc_truetypeassembler.h
     #include ...
     #define KC_TRUETYPEASSEMBLER_IMPLEMENTATION
     #include "kc_truetypeassembler.h"
+    
 PURPOSE:
     Single-header library to generate vertices and texture coordinates array for
     creating Vertex Buffers to render text onto the screen. Works seamlessly with 

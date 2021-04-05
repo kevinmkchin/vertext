@@ -7,7 +7,7 @@ Single header C library for assembling textured quads for text rendering. The li
 
 This library REQUIRES [Sean Barrett's stb_truetype.h](https://github.com/nothings/stb/blob/master/stb_truetype.h) library (which is also a single header). Include like so:
 
-![](https://github.com/kevinmkchin/TrueTypeAssembler/blob/main/misc/includes.png?raw=true)
+![](https://github.com/kevinmkchin/TrueTypeAssembler/blob/main/misc/include.png?raw=true)
 
 Public domain. Do whatever you want with it.
 

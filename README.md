@@ -15,12 +15,19 @@ Public domain. Do whatever you want with it.
 kc_truetypeassembler.h 
 
  - kevinmkchin's TrueType Assembler -
-
+    Do this:
+        #define KC_TRUETYPEASSEMBLER_IMPLEMENTATION
+    before you include this file in *one* C or C++ file to create the implementation.
+    // i.e. it should look like this:
+    #include ...
+    #include ...
+    #include ...
+    #define KC_TRUETYPEASSEMBLER_IMPLEMENTATION
+    #include "kc_truetypeassembler.h"
 PURPOSE:
     Single-header library to generate vertices and texture coordinates array for
     creating Vertex Buffers to render text onto the screen. Works seamlessly with 
     both OpenGL and DirectX. Probably also works with other graphics APIs out there...
-
     This library strives to solve 2 problems:
     - Creating an individual vertex array / textured quad for every single character you
     want to draw is extremely inefficient - especially if each character has their own
@@ -28,7 +35,6 @@ PURPOSE:
     - Every character/glyph has varying sizes and parameters that affect how they should
     be drawn relative to all the other characters/glyphs. These must be considered when
     drawing a line of text.
-
     This library solves these problems by 
         1.  generating a single, large texture combining all the individual textures of the
             characters - called a font Texture Atlas
@@ -37,7 +43,6 @@ PURPOSE:
             required by the text you want to draw
         3.  handling the assembly of the quad vertices for the single vertex buffer by
             using the character/glyph metrics (size, offsets, etc.)
-
 CONCEPT:
     This library serves as a text drawing "canvas". 
     You can "append" lines of text or characters to the "canvas". You can control where
@@ -47,31 +52,24 @@ CONCEPT:
     Then, it is up to you and your graphics API to create the VAO and VBO on the graphics card
     using the vertex buffer you "grabbed" from this library.
     Check the USAGE EXAMPLEs below to see how this would translate to code.
-
 USAGE:
     This library REQUIRES Sean Barrett's stb_truetype.h to be included beforehand:
     https://raw.githubusercontent.com/nothings/stb/master/stb_truetype.h
-
     This library's purpose is to return an array of vertices and texture coordinates:
         [ x, y, u, v, x, y, u, v, ......, x, y, u, v ]
     You can feed this into a Vertex Buffer with a Stride of 4.
-
     Since this library only returns an array of vertex and texture coordinates, you 
     should be able to feed that array into the vertex buffer of any graphics API and 
     get it working.
-
     This library is not responsible for rendering text. You can do that on your own in your
     preferred graphics API, a quad/ui rendering shader, and an orthogonal projection matrix.
     (https://www.learnopengles.com/tag/index-buffer-object/)
-
 USAGE EXAMPLE (Pseudocode):
-
 Do only once:
     Optional:   kctta_use_index_buffer(b_use = 1);                        <-- Set this to true if you are using indexed draws
                             |
                             V
     Required:   kctta_init_font(font_handle, font_buffer, font_height);   <-- DO ONLY ONCE PER FONT (or per font resolution)
-
 Loop:
     Optional:   kctta_move_cursor(x = 640, y = 360);                      <-- Set the cursor to x y (where to start drawing)
                             |
@@ -97,12 +95,8 @@ Loop:
     Optional:   kctta_clear_buffer();           <-- REQUIRED IF you want to clear the appended text to append NEW text
                                                     Only clear AFTER you bind the vertex and index buffers of %grabbedbuffer%
                                                     to the VAO and VBO on the GPU.
-
-
 USAGE EXAMPLE (C code using OpenGL):
-
     #define TEXT_SIZE 30
-
     unsigned char* font_file;
     // Read the font file on disk (e.g. "arial.ttf") into a byte buffer in memory (e.g. font_file) using your own method
     // If you are using SDL, you can use SDL_RW. You could also use stdio.h's file operations (fopen, fread, fclose, etc.).
@@ -112,16 +106,12 @@ USAGE EXAMPLE (C code using OpenGL):
     kctta_init_font(&font_handle, font_file, TEXT_SIZE);
     // TEXT_SIZE in init_font doesn't need to be the same as the TEXT_SIZE we use when we call append_line or glyph
     // Now font_handle has all the info we need.
-
     kctta_clear_buffer();
     kctta_move_cursor(100, 100);
     kctta_append_line("Hello, world!", &font_handle);
-
     TTAVertexBuffer vb = kctta_grab_buffer();
-
     // That's it. That's all you need to interact with this library. Everything below is just
     // using the vertex buffer from the library to actually get the text drawing in OpenGL.
-
     GLuint VAO_ID, VBO_ID, IBO_ID, TextureID;
     // Creating the VAO for our text in the GPU memory
     glBindVertexArray(VAO_ID);

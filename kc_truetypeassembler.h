@@ -163,10 +163,11 @@ Maybe:
 #ifndef _INCLUDE_KC_TRUETYPEASSEMBLER_H_
 #define _INCLUDE_KC_TRUETYPEASSEMBLER_H_
 
-#define kctta_internal static   // kctta internal function
 #define KCTTA_ASCII_FROM ' '    // starting ASCII codepoint to collect font data for
 #define KCTTA_ASCII_TO '~'      // ending ASCII codepoint to collect font data for
 #define KCTTA_GLYPH_COUNT KCTTA_ASCII_TO - KCTTA_ASCII_FROM + 1
+
+#define kctta_internal static   // kctta internal function
 
 /** Stores a pointer to the vertex buffer assembly array and the count of vertices in the 
     array (total length of array would be count of vertices * 4).
@@ -274,9 +275,6 @@ kctta_internal void kctta_clear_buffer();
 kctta_internal void kctta_use_index_buffer(unsigned int b_use);
 
 #undef kctta_internal
-#undef KCTTA_ASCII_FROM
-#undef KCTTA_ASCII_TO
-#undef KCTTA_GLYPH_COUNT
 
 #endif // _INCLUDE_KC_TRUETYPEASSEMBLER_H_
 
@@ -284,9 +282,6 @@ kctta_internal void kctta_use_index_buffer(unsigned int b_use);
 ///////////////////// IMPLEMENTATION //////////////////////////
 #define kctta_internal static           // kctta internal function
 #define kctta_local_persist static      // kctta local static variable
-#define KCTTA_ASCII_FROM ' '            // starting ASCII codepoint to collect font data for
-#define KCTTA_ASCII_TO '~'              // ending ASCII codepoint to collect font data for
-#define KCTTA_GLYPH_COUNT KCTTA_ASCII_TO - KCTTA_ASCII_FROM + 1
 #define KCTTA_MAX_CHAR_IN_BUFFER 800    // maximum characters allowed in vertex buffer ("canvas")
 #define KCTTA_MAX_FONT_RESOLUTION 100   // maximum font resolution when initializing font
 #define KCTTA_DESIRED_ATLAS_WIDTH 400   // width of the font atlas

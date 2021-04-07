@@ -228,6 +228,16 @@ EXAMPLE (C code using OpenGL):
                          vb.vertices_array_count * 4,
                          vb.vertex_buffer,
                          GL_STATIC_DRAW);
+            glEnableVertexAttribArray(0); // vertices coordinates stream
+            glVertexAttribPointer(0, 2, // 2 because vertex is 2 floats (x and y)
+                                  GL_FLOAT, GL_FALSE,
+                                  4*4,  // 4 stride (x y u v) * 4 bytes (size of float)
+                                  0);
+            glEnableVertexAttribArray(1); // texture coordinates stream
+            glVertexAttribPointer(0, 2, // 2 because texture coord is 2 floats (u and v)
+                                  GL_FLOAT, GL_FALSE,
+                                  4*4,  // 4 stride (x y u v) * 4 bytes (size of float)
+                                  2*4); // offset of 8 because two floats, x y, come before u v
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO_ID);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER,
                          vb.indices_array_count * 4,

@@ -7,8 +7,4 @@ PURPOSE: Text rendering is a non-trivial task, and this library strives to make 
 
 ![](https://github.com/kevinmkchin/vertext/blob/main/misc/text-buffer-assembly.gif?raw=true)
 
-This library REQUIRES [Sean Barrett's stb_truetype.h](https://github.com/nothings/stb/blob/master/stb_truetype.h) library (which is also a single header). Include like so:
-
-![](https://github.com/kevinmkchin/vertext/blob/main/misc/include.png?raw=true)
-
-Public domain.
+This library REQUIRES [Sean Barrett's stb_truetype.h](https://github.com/nothings/stb/blob/master/stb_truetype.h) library (which is also a single header).

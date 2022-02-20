@@ -3,8 +3,8 @@ Single header C library for assembling textured quads for rendering text. This l
 
 PURPOSE: Text rendering is a non-trivial task, and this library strives to make it easy and frictionless.
 
+This library REQUIRES [Sean Barrett's stb_truetype.h](https://github.com/nothings/stb/blob/master/stb_truetype.h) library (which is also a single header).
+
 ![](https://github.com/kevinmkchin/vertext/blob/main/misc/console.gif?raw=true)
 
 ![](https://github.com/kevinmkchin/vertext/blob/main/misc/text-buffer-assembly.gif?raw=true)
-
-This library REQUIRES [Sean Barrett's stb_truetype.h](https://github.com/nothings/stb/blob/master/stb_truetype.h) library (which is also a single header).

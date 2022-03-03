@@ -104,7 +104,7 @@ USAGE:
         If you just want to use Clip Space coordinates, then you need to set the flag for it:
             vtxt_setflags(VTXT_USE_CLIPSPACE_COORDS);
         and tell the library the window size:
-            vtxt_windowsize(WIDTH, HEIGHT);
+            vtxt_backbuffersize(WIDTH, HEIGHT);
         If you are using Screen Space coordinates, you don't need to do any of that.
 
     > Config Flags:
@@ -165,7 +165,7 @@ Do only once:
     Optional:   vtxt_setflags(VTXT_CREATE_INDEX_BUFFER);                <-- Configures the library with given flags
                             |
                             V
-    Optional:   vtxt_windowsize(window width=1920, window height=1080);  <-- Only required if using VTXT_USE_CLIPSPACE_COORDS
+    Optional:   vtxt_backbuffersize(window width=1920, window height=1080);  <-- Only required if using VTXT_USE_CLIPSPACE_COORDS
                             |
                             V
     Required:   vtxt_init_font(font_handle, font_buffer, font_height);   <-- DO ONLY ONCE PER FONT (or per font resolution)
@@ -205,7 +205,7 @@ EXAMPLE (C code using OpenGL):
     // Read the font file on disk (e.g. "arial.ttf") into a byte buffer in memory (e.g. font_file) using your own method
     // If you are using SDL, you can use SDL_RW. You could also use stdio.h's file operations (fopen, fread, fclose, etc.).
     
-    vtxt_setup(VTXT_CREATE_INDEX_BUFFER|VTXT_USE_CLIPSPACE_COORDS);     // vertext.h setting
+    vtxt_setflags(VTXT_CREATE_INDEX_BUFFER|VTXT_USE_CLIPSPACE_COORDS);     // vertext.h setting
     vtxt_backbuffersize(WIDTH, HEIGHT);
 
     vtxt_font font_handle;
@@ -462,7 +462,7 @@ vtxt_init_font(vtxt_font* font_handle, unsigned char* font_buffer, int font_heig
     // Font metrics
     stbtt_fontinfo stb_font_info;
     stbtt_InitFont(&stb_font_info, font_buffer, 0);
-    float stb_scale = stbtt_ScaleForPixelHeight(&stb_font_info, (float)font_height_in_pixels);
+    float stb_scale = stbtt_ScaleForMappingEmToPixels(&stb_font_info, (float)font_height_in_pixels);
     int stb_ascender;
     int stb_descender;
     int stb_linegap;

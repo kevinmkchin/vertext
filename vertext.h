@@ -118,6 +118,8 @@ USAGE:
         VTXT_NEWLINE_ABOVE:
             Sets the library to move the cursor above the current line instead of below
             when calling vtxt_new_line.
+        VTXT_FLIP_Y:
+            Flips y vertex position in case you are using a coordinate system where "up" is negative y.
 
     > By Default:
         - no indexed drawing (unless specified with flag VTXT_CREATE_INDEX_BUFFER)
@@ -337,7 +339,8 @@ enum _vtxt_config_flags_t
 {
     VTXT_CREATE_INDEX_BUFFER     = 1 << 0,
     VTXT_USE_CLIPSPACE_COORDS    = 1 << 1,
-    VTXT_NEWLINE_ABOVE           = 1 << 2
+    VTXT_NEWLINE_ABOVE           = 1 << 2,
+    VTXT_FLIP_Y                  = 1 << 3,
 };
 
 /** Configures this library to use the settings defined by _vtxt_config_flags_t.
@@ -368,23 +371,28 @@ VTXT_DEF void vtxt_move_cursor(int x,
 /** Go to new line and set X location of cursor
 */
 VTXT_DEF void vtxt_new_line(int          x,
-                            vtxt_font*  font);
+                            vtxt_font*   font);
 
 /** Assemble quads for a line of text and append to vertex buffer.
-    line_of_text is the text you want to draw e.g. "some text I want to draw".
+    line_of_text is the text you want to draw e.g. "some text I want to Draw".
     font is the vtxt_font font handle that contains the font you want to use.
     font_size is the font height in pixels.
 */
 VTXT_DEF void vtxt_append_line(const char*   line_of_text,
-                               vtxt_font*   font,
+                               vtxt_font*    font,
                                int           font_size);
+
+/** Same as vtxt_append_line but center horizontally where the cursor is. */
+VTXT_DEF void vtxt_append_line_centered(const char* line_of_text,
+                                        vtxt_font*  font,
+                                        int         font_size);
 
 /** Assemble quad for a glyph and append to vertex buffer.
     font is the vtxt_font font handle that contains the font you want to use.
     font_size is the font height in pixels
 */
 VTXT_DEF void vtxt_append_glyph(const char   in_glyph,
-                                vtxt_font*  font,
+                                vtxt_font*   font,
                                 int          font_size);
 
 /** Get vtxt_vertex_buffer with a pointer to the vertex buffer array
@@ -399,6 +407,9 @@ VTXT_DEF vtxt_vertex_buffer vtxt_grab_buffer();
     the buffer before calling vtxt_clear_buffer.
 */
 VTXT_DEF void vtxt_clear_buffer();
+
+/** Set an offset to font linegap. Default is 0. */
+VTXT_DEF void vtxt_set_linegap_offset(float offset);
 
 #endif // _INCLUDE_VERTEXT_H_
 
@@ -425,6 +436,7 @@ _vtxt_internal int _vtxt_vertex_count = 0; // Each vertex takes up 4 places in t
 _vtxt_internal unsigned int _vtxt_index_buffer[VTXT_MAX_CHAR_IN_BUFFER * 6];
 _vtxt_internal int _vtxt_index_count = 0;
 _vtxt_internal int _vtxt_config = 0b0;
+_vtxt_internal float _vtxt_linegap_offset = 0.f;
 _vtxt_internal int _vtxt_cursor_x = 0;   // top left of the screen is pixel (0, 0), bot right of the screen is pixel (screen buffer width, screen buffer height)
 _vtxt_internal int _vtxt_cursor_y = 100; // cursor points to the base line at which to start drawing the glyph
 _vtxt_internal int _vtxt_screen_w_for_clipspace = 800;
@@ -440,6 +452,12 @@ vtxt_setflags(int newconfig)
     {
         vtxt_clear_buffer();
     }
+}
+
+VTXT_DEF void
+vtxt_set_linegap_offset(float offset)
+{
+    _vtxt_linegap_offset = offset;
 }
 
 VTXT_DEF void
@@ -576,19 +594,34 @@ vtxt_move_cursor(int x, int y)
 VTXT_DEF void
 vtxt_new_line(int x, vtxt_font* font)
 {
+    float linegap = font->linegap + _vtxt_linegap_offset;
     _vtxt_cursor_x = x;
     if(_vtxt_config & VTXT_NEWLINE_ABOVE)
     {
-        _vtxt_cursor_y -= (int) (-font->descender + font->linegap + font->ascender);
+        if(_vtxt_config & VTXT_FLIP_Y)
+        {
+            _vtxt_cursor_y += (int) (-font->descender + linegap + font->ascender);
+        }
+        else
+        {
+            _vtxt_cursor_y -= (int) (-font->descender + linegap + font->ascender);
+        }
     }
     else
     {
-        _vtxt_cursor_y += (int) (-font->descender + font->linegap + font->ascender);
+        if(_vtxt_config & VTXT_FLIP_Y)
+        {
+            _vtxt_cursor_y -= (int) (-font->descender + linegap + font->ascender);
+        }
+        else
+        {
+            _vtxt_cursor_y += (int) (-font->descender + linegap + font->ascender);
+        }
     }
 }
 
 VTXT_DEF void
-vtxt_append_glyph(const char in_glyph, vtxt_font* font, int font_size)
+__private_vtxt_append_glyph(const char in_glyph, vtxt_font* font, int font_size, float x_offset_from_cursor)
 {
     if(in_glyph < VTXT_ASCII_FROM || in_glyph > VTXT_ASCII_TO) // Make sure we have the data for this glyph
     {
@@ -613,8 +646,14 @@ vtxt_append_glyph(const char in_glyph, vtxt_font* font, int font_size)
 
     float top = _vtxt_cursor_y + glyph.offset_y;
     float bot = _vtxt_cursor_y + glyph.offset_y + glyph.height;
-    float left = _vtxt_cursor_x + glyph.offset_x;
-    float right = _vtxt_cursor_x + glyph.offset_x + glyph.width;
+    float left = _vtxt_cursor_x + glyph.offset_x + x_offset_from_cursor;
+    float right = _vtxt_cursor_x + glyph.offset_x + glyph.width + x_offset_from_cursor;
+    if(_vtxt_config & VTXT_FLIP_Y)
+    {
+        top = _vtxt_cursor_y - glyph.offset_y;
+        bot = _vtxt_cursor_y - glyph.offset_y - glyph.height;
+    }
+
     if(_vtxt_config & VTXT_USE_CLIPSPACE_COORDS)
     {
         top = (1.f - ((top / _vtxt_screen_h_for_clipspace) * 2.f));
@@ -695,6 +734,12 @@ vtxt_append_glyph(const char in_glyph, vtxt_font* font, int font_size)
 }
 
 VTXT_DEF void
+vtxt_append_glyph(const char in_glyph, vtxt_font* font, int font_size)
+{
+    __private_vtxt_append_glyph(in_glyph, font, font_size, 0.f);
+}
+
+VTXT_DEF void
 vtxt_append_line(const char* line_of_text, vtxt_font* font, int font_size)
 {
     int line_start_x = _vtxt_cursor_x;
@@ -713,6 +758,48 @@ vtxt_append_line(const char* line_of_text, vtxt_font* font, int font_size)
             vtxt_new_line(line_start_x, font);
         }
         ++line_of_text;// next character
+    }
+}
+
+VTXT_DEF void
+vtxt_append_line_centered(const char* line_of_text, vtxt_font* font, int font_size)
+{
+    int line_start_x = _vtxt_cursor_x;
+    char line_buffer[256];
+    int lb_index = 0;
+    while(*line_of_text != '\0' && *line_of_text != '\n')
+    {
+        line_buffer[lb_index++] = *line_of_text++;
+    }
+    float line_length = 0.f;
+    for(int i = 0; i < lb_index; ++i)
+    {
+        char in_glyph = line_buffer[i];
+        float scale = ((float) font_size) / (font->ascender - font->descender);
+        vtxt_glyph glyph = font->glyphs[in_glyph - VTXT_ASCII_FROM];
+        glyph.advance *= scale;
+        line_length += glyph.advance;
+    }
+    float half_line_length = line_length/2.f;
+    for(int i = 0; i < lb_index; ++i)
+    {    
+        char in_glyph = line_buffer[i];
+        if(VTXT_MAX_CHAR_IN_BUFFER * 6 < _vtxt_vertex_count + 6) // Make sure we are not exceeding the array size
+        {
+            break;
+        }
+        __private_vtxt_append_glyph(in_glyph, font, font_size, -half_line_length);
+    }
+
+    if(*line_of_text == '\n')
+    {
+        vtxt_new_line(line_start_x, font);
+        ++line_of_text;
+        vtxt_append_line_centered(line_of_text, font, font_size);
+    }
+    else // terminate
+    {
+
     }
 }
 

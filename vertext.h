@@ -319,8 +319,7 @@ typedef struct vtxt_bitmap
 */
 typedef struct vtxt_glyph
 {
-    int             width,height;
-    float           advance,offset_x,offset_y,min_u,min_v,max_u,max_v;
+    float           width, height, advance,offset_x,offset_y,min_u,min_v,max_u,max_v;
     char            codepoint;
 } vtxt_glyph;
 
@@ -516,28 +515,28 @@ vtxt_init_font(vtxt_font* font_handle, unsigned char* font_buffer, int font_heig
                                                                 &stb_height,
                                                                 &stb_offset_x,
                                                                 &stb_offset_y);
-        glyph.width = stb_width;
-        glyph.height = stb_height;
+        glyph.width = (float)stb_width;
+        glyph.height = (float)stb_height;
         glyph.offset_x = (float)stb_offset_x;
         glyph.offset_y = (float)stb_offset_y;
 
         // Copy stb_bitmap_temp bitmap into glyph's pixels bitmap so we can free stb_bitmap_temp
         int iter = char_index - VTXT_ASCII_FROM;
         temp_glyph_bitmaps[iter].pixels = (unsigned char*) calloc((size_t)glyph.width * (size_t)glyph.height, 1);
-        for(int row = 0; row < glyph.height; ++row)
+        for(int row = 0; row < (int) glyph.height; ++row)
         {
-            for(int col = 0; col < glyph.width; ++col)
+            for(int col = 0; col < (int) glyph.width; ++col)
             {
                 // Flip the bitmap image from top to bottom to bottom to top
-                temp_glyph_bitmaps[iter].pixels[row * glyph.width + col] = stb_bitmap_temp[(glyph.height - row - 1) * glyph.width + col];
+                temp_glyph_bitmaps[iter].pixels[row * (int) glyph.width + col] = stb_bitmap_temp[((int) glyph.height - row - 1) * (int) glyph.width + col];
             }
         }
-        temp_glyph_bitmaps[iter].width = glyph.width;
-        temp_glyph_bitmaps[iter].height = glyph.height;
-        aggregate_glyph_width += glyph.width + VTXT_ATLAS_PAD_X;
-        if(tallest_glyph_height < glyph.height)
+        temp_glyph_bitmaps[iter].width = (int) glyph.width;
+        temp_glyph_bitmaps[iter].height = (int) glyph.height;
+        aggregate_glyph_width += (int)glyph.width + VTXT_ATLAS_PAD_X;
+        if(tallest_glyph_height < (int)glyph.height)
         {
-            tallest_glyph_height = glyph.height;
+            tallest_glyph_height = (int)glyph.height;
         }
         stbtt_FreeBitmap(stb_bitmap_temp, 0);
 
@@ -636,8 +635,8 @@ __private_vtxt_append_glyph(const char in_glyph, vtxt_font* font, int font_size,
     float scale = ((float) font_size) / (font->ascender - font->descender);
     vtxt_glyph glyph = font->glyphs[in_glyph - VTXT_ASCII_FROM];
     glyph.advance *= scale;
-    glyph.width = (int) ((float) glyph.width * scale);
-    glyph.height = (int) ((float) glyph.height * scale);
+    glyph.width *= scale; // NOTE(Kevin): 2022-06-15 scale was float, but width and height were integers so rounding was causing text to render strangely - fixed by just changing width and height to floats
+    glyph.height *= scale;
     glyph.offset_x *= scale;
     glyph.offset_y *= scale;
 

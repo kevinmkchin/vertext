@@ -12,7 +12,7 @@ oooo    ooo  .ooooo.  oooo d8b .o888oo  .ooooo.  oooo    ooo .o888oo
 
 
 
-By Kevin Chin 2021 (https://kevch.in/)
+By Kevin Chin 2022 (https://kevch.in/)
 
     Requires stb_truetype.h (https://github.com/nothings/stb/blob/master/stb_truetype.h)
     Do this:
@@ -386,6 +386,11 @@ VTXT_DEF void vtxt_append_line_centered(const char* line_of_text,
                                         vtxt_font*  font,
                                         int         font_size);
 
+/** Same as vtxt_append_line but with text using right-alignment (the text is to the left of the cursor). */
+VTXT_DEF void vtxt_append_line_align_right(const char* line_of_text, 
+                                           vtxt_font*  font, 
+                                           int         font_size);
+
 /** Assemble quad for a glyph and append to vertex buffer.
     font is the vtxt_font font handle that contains the font you want to use.
     font_size is the font height in pixels
@@ -757,6 +762,47 @@ vtxt_append_line(const char* line_of_text, vtxt_font* font, int font_size)
             vtxt_new_line(line_start_x, font);
         }
         ++line_of_text;// next character
+    }
+}
+
+VTXT_DEF void
+vtxt_append_line_align_right(const char* line_of_text, vtxt_font* font, int font_size)
+{
+    int line_start_x = _vtxt_cursor_x;
+    char line_buffer[256];
+    int lb_index = 0;
+    while (*line_of_text != '\0' && *line_of_text != '\n')
+    {
+        line_buffer[lb_index++] = *line_of_text++;
+    }
+    float line_length = 0.f;
+    for (int i = 0; i < lb_index; ++i)
+    {
+        char in_glyph = line_buffer[i];
+        float scale = ((float)font_size) / (font->ascender - font->descender);
+        vtxt_glyph glyph = font->glyphs[in_glyph - VTXT_ASCII_FROM];
+        glyph.advance *= scale;
+        line_length += glyph.advance;
+    }
+    for (int i = 0; i < lb_index; ++i)
+    {
+        char in_glyph = line_buffer[i];
+        if (VTXT_MAX_CHAR_IN_BUFFER * 6 < _vtxt_vertex_count + 6) // Make sure we are not exceeding the array size
+        {
+            break;
+        }
+        __private_vtxt_append_glyph(in_glyph, font, font_size, -line_length);
+    }
+
+    if (*line_of_text == '\n')
+    {
+        vtxt_new_line(line_start_x, font);
+        ++line_of_text;
+        vtxt_append_line_align_right(line_of_text, font, font_size);
+    }
+    else // terminate
+    {
+
     }
 }
 

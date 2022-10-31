@@ -1,5 +1,5 @@
 # vertext
-Single header C library for assembling textured quads for rendering text. This library does not perform rendering directly and instead provides a vertex buffer of vertices (in either Screen Space or Clip Space) and texture coordinates. This allows the library to work seamlessly with both OpenGL and DirectX. Very lightweight: ~450 LOC. See https://github.com/kevinmkchin/XNGINE for use examples. 
+Single header C library for assembling textured quads for rendering text. This library does not perform rendering directly and instead provides a vertex buffer of vertices (in either Screen Space or Clip Space) and texture coordinates. This allows the library to work seamlessly with both OpenGL and DirectX. Very lightweight: ~700 lines of code.
 
 PURPOSE: Text rendering is a non-trivial task, and this library strives to make it easy and frictionless.
 
